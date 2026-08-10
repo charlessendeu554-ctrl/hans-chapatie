@@ -1,0 +1,670 @@
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+
+    margin: 0;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    background:
+        #fffaf5;
+
+    color:
+        #292524;
+
+}
+
+
+header {
+
+    background:
+        #78350f;
+
+    color:
+        white;
+
+    padding:
+        18px 6%;
+
+}
+
+
+.brand {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+}
+
+
+.logo {
+
+    width:
+        50px;
+
+    height:
+        50px;
+
+    background:
+        #f59e0b;
+
+    color:
+        #451a03;
+
+    border-radius:
+        50%;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    font-weight:
+        bold;
+
+}
+
+
+.brand h1 {
+
+    margin:
+        0;
+
+    font-size:
+        22px;
+
+}
+
+
+.brand p {
+
+    margin:
+        4px 0 0;
+
+    color:
+        #fed7aa;
+
+}
+
+
+.hero {
+
+    text-align:
+        center;
+
+    padding:
+        70px 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #92400e,
+            #b45309
+        );
+
+    color:
+        white;
+
+}
+
+
+.hero h2 {
+
+    font-size:
+        40px;
+
+    margin:
+        0 0 12px;
+
+}
+
+
+.hero p {
+
+    font-size:
+        18px;
+
+}
+
+
+.hero-button {
+
+    display:
+        inline-block;
+
+    margin-top:
+        20px;
+
+    background:
+        white;
+
+    color:
+        #78350f;
+
+    padding:
+        13px 25px;
+
+    border-radius:
+        8px;
+
+    text-decoration:
+        none;
+
+    font-weight:
+        bold;
+
+}
+
+
+main {
+
+    width:
+        92%;
+
+    max-width:
+        1100px;
+
+    margin:
+        auto;
+
+}
+
+
+.products-section,
+.cart-section {
+
+    padding:
+        45px 0;
+
+}
+
+
+.products {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                220px,
+                1fr
+            )
+        );
+
+    gap:
+        20px;
+
+}
+
+
+.product-card {
+
+    background:
+        white;
+
+    border:
+        1px solid #fed7aa;
+
+    border-radius:
+        12px;
+
+    padding:
+        22px;
+
+    box-shadow:
+        0 4px 15px
+        rgba(
+            120,
+            53,
+            15,
+            .08
+        );
+
+}
+
+
+.product-card h3 {
+
+    color:
+        #78350f;
+
+}
+
+
+.product-description {
+
+    color:
+        #78716c;
+
+    min-height:
+        40px;
+
+}
+
+
+.price {
+
+    color:
+        #b45309;
+
+    font-size:
+        21px;
+
+    font-weight:
+        bold;
+
+    margin:
+        15px 0;
+
+}
+
+
+.add-button {
+
+    width:
+        100%;
+
+    border:
+        none;
+
+    background:
+        #78350f;
+
+    color:
+        white;
+
+    padding:
+        12px;
+
+    border-radius:
+        7px;
+
+    cursor:
+        pointer;
+
+    font-weight:
+        bold;
+
+}
+
+
+.cart-section {
+
+    background:
+        white;
+
+    padding:
+        25px;
+
+    margin:
+        30px 0 50px;
+
+    border-radius:
+        12px;
+
+    box-shadow:
+        0 3px 15px
+        rgba(
+            0,
+            0,
+            0,
+            .08
+        );
+
+}
+
+
+.cart-item {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    border-bottom:
+        1px solid #eee;
+
+    padding:
+        12px 0;
+
+}
+
+
+.quantity-controls {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+}
+
+
+.quantity-controls button {
+
+    border:
+        none;
+
+    background:
+        #f59e0b;
+
+    width:
+        28px;
+
+    height:
+        28px;
+
+    border-radius:
+        5px;
+
+    cursor:
+        pointer;
+
+}
+
+
+.cart-total {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    font-size:
+        22px;
+
+    margin-top:
+        20px;
+
+}
+
+
+.whatsapp-button {
+
+    width:
+        100%;
+
+    margin-top:
+        20px;
+
+    border:
+        none;
+
+    padding:
+        15px;
+
+    background:
+        #25d366;
+
+    color:
+        white;
+
+    border-radius:
+        8px;
+
+    font-size:
+        17px;
+
+    font-weight:
+        bold;
+
+    cursor:
+        pointer;
+
+}
+
+
+.whatsapp-button:disabled {
+
+    opacity:
+        .5;
+
+    cursor:
+        not-allowed;
+
+}
+
+
+.modal {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            .65
+        );
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+}
+
+
+.hidden {
+
+    display:
+        none;
+
+}
+
+
+.modal-content {
+
+    background:
+        white;
+
+    width:
+        100%;
+
+    max-width:
+        500px;
+
+    padding:
+        25px;
+
+    border-radius:
+        12px;
+
+    position:
+        relative;
+
+}
+
+
+.close {
+
+    position:
+        absolute;
+
+    right:
+        15px;
+
+    top:
+        10px;
+
+    border:
+        none;
+
+    background:
+        none;
+
+    font-size:
+        30px;
+
+    cursor:
+        pointer;
+
+}
+
+
+.modal-content label {
+
+    display:
+        block;
+
+    margin-top:
+        15px;
+
+    margin-bottom:
+        5px;
+
+    font-weight:
+        bold;
+
+}
+
+
+.modal-content input,
+.modal-content textarea {
+
+    width:
+        100%;
+
+    padding:
+        12px;
+
+    border:
+        1px solid #d6d3d1;
+
+    border-radius:
+        6px;
+
+    font-size:
+        15px;
+
+}
+
+
+.modal-content textarea {
+
+    min-height:
+        80px;
+
+}
+
+
+.submit-button {
+
+    width:
+        100%;
+
+    margin-top:
+        20px;
+
+    padding:
+        14px;
+
+    background:
+        #78350f;
+
+    color:
+        white;
+
+    border:
+        none;
+
+    border-radius:
+        7px;
+
+    font-weight:
+        bold;
+
+    cursor:
+        pointer;
+
+}
+
+
+footer {
+
+    text-align:
+        center;
+
+    background:
+        #451a03;
+
+    color:
+        white;
+
+    padding:
+        35px 20px;
+
+}
+
+
+.empty {
+
+    color:
+        #78716c;
+
+}
+
+
+@media (
+    max-width: 600px
+) {
+
+    .hero h2 {
+
+        font-size:
+            30px;
+
+    }
+
+
+    .cart-item {
+
+        flex-direction:
+            column;
+
+        align-items:
+            flex-start;
+
+        gap:
+            10px;
+
+    }
+
+}

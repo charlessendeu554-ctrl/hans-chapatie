@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Hans Chapatie Centre
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="brand">
+
+        <div class="logo">
+            HC
+        </div>
+
+        <div>
+
+            <h1>
+                Hans Chapatie Centre
+            </h1>
+
+            <p>
+                Fresh Chapati • Made With Love
+            </p>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<section class="hero">
+
+    <h2>
+        Fresh Chapati,
+        Ready For You
+    </h2>
+
+    <p>
+        Order easily through WhatsApp.
+    </p>
+
+    <a
+        href="#products"
+        class="hero-button"
+    >
+        Order Now
+    </a>
+
+</section>
+
+
+
+<main>
+
+
+<section
+    id="products"
+    class="products-section"
+>
+
+    <h2>
+        Our Chapati
+    </h2>
+
+
+    <div
+        id="productsContainer"
+        class="products"
+    >
+
+        <p>
+            Loading products...
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<section class="cart-section">
+
+    <h2>
+        Your Order
+    </h2>
+
+
+    <div id="cartContainer">
+
+        <p class="empty">
+            Your order is empty.
+        </p>
+
+    </div>
+
+
+    <div class="cart-total">
+
+        <span>
+            Total
+        </span>
+
+        <strong id="cartTotal">
+            TSh 0
+        </strong>
+
+    </div>
+
+
+    <button
+        id="whatsappButton"
+        class="whatsapp-button"
+        disabled
+    >
+        Order via WhatsApp
+    </button>
+
+</section>
+
+
+</main>
+
+
+
+<div
+    id="customerModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <button
+            class="close"
+            onclick="closeModal()"
+        >
+            ×
+        </button>
+
+
+        <h2>
+            Complete Your Order
+        </h2>
+
+
+        <label>
+            Your Name
+        </label>
+
+        <input
+            id="customerName"
+            type="text"
+            placeholder="Enter your name"
+        >
+
+
+        <label>
+            Phone Number
+        </label>
+
+        <input
+            id="customerPhone"
+            type="tel"
+            placeholder="0712345678"
+        >
+
+
+        <label>
+            Delivery Address
+        </label>
+
+        <textarea
+            id="customerAddress"
+            placeholder="Enter delivery address"
+        ></textarea>
+
+
+        <label>
+            Notes
+        </label>
+
+        <textarea
+            id="customerNotes"
+            placeholder="Optional notes"
+        ></textarea>
+
+
+        <button
+            onclick="submitOrder()"
+            class="submit-button"
+        >
+            Place Order
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<footer>
+
+    <strong>
+        Hans Chapatie Centre
+    </strong>
+
+    <p>
+        Fresh Chapati Every Day
+    </p>
+
+    <p>
+        WhatsApp:
+        0695995956
+    </p>
+
+</footer>
+
+
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
