@@ -15,7 +15,7 @@ const requireAdmin = require("./middleware/auth");
 
 const app = express();
 
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT) || 10000;
 
 
 // =====================================================
