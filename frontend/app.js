@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "https://align-attended-partially-hepatitis.trycloudflare.com";
 
 const WHATSAPP_NUMBER = "255695995956";
 
