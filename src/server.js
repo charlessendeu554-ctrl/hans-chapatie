@@ -427,3 +427,7 @@ async function startServer() {
 
 
 startServer();
+
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Hans Chapatie API running on port ${PORT}`);
+});
