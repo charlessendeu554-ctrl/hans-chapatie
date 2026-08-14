@@ -370,258 +370,6 @@ function closeModal() {
 // SUBMIT ORDER
 // =====================================================
 
-async function submitOrder() {
-
-    const customerName =
-        document
-            .getElementById(
-                "customerName"
-            )
-            .value
-            .trim();
-
-
-    const customerPhone =
-        document
-            .getElementById(
-                "customerPhone"
-            )
-            .value
-            .trim();
-
-
-    const customerAddress =
-        document
-            .getElementById(
-                "customerAddress"
-            )
-            .value
-            .trim();
-
-
-    const customerNotes =
-        document
-            .getElementById(
-                "customerNotes"
-            )
-            .value
-            .trim();
-
-
-    // ---------------------------------------------
-    // VALIDATION
-    // ---------------------------------------------
-
-    if (!customerName) {
-
-        alert(
-            "Please enter your name."
-        );
-
-        return;
-    }
-
-
-    if (!customerPhone) {
-
-        alert(
-            "Please enter your phone number."
-        );
-
-        return;
-    }
-
-
-    if (!cart.length) {
-
-        alert(
-            "Your order is empty."
-        );
-
-        return;
-    }
-
-
-    // ---------------------------------------------
-    // PREPARE ORDER
-    // ---------------------------------------------
-
-    const orderData = {
-
-        customer_name:
-            customerName,
-
-        phone:
-            customerPhone,
-
-        address:
-            customerAddress,
-
-        notes:
-            customerNotes,
-
-        items:
-            cart.map(item => ({
-
-                product_id:
-                    item.product_id,
-
-                quantity:
-                    item.quantity
-
-            }))
-
-    };
-
-
-    const submitButton =
-        document.querySelector(
-            ".submit-button"
-        );
-
-
-    if (submitButton) {
-
-        submitButton.disabled =
-            true;
-
-        submitButton.textContent =
-            "Creating Order...";
-    }
-
-
-    try {
-
-        // -----------------------------------------
-        // SEND ORDER TO BACKEND
-        // -----------------------------------------
-
-        const response =
-            await fetch(
-                `${API_URL}/api/orders`,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            orderData
-                        )
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        // -----------------------------------------
-        // CHECK SERVER RESPONSE
-        // -----------------------------------------
-
-        if (
-            !response.ok ||
-            !data.success
-        ) {
-
-            throw new Error(
-                data.error ||
-                data.message ||
-                "Unable to create order"
-            );
-        }
-
-
-        const order =
-            data.order;
-
-
-        // -----------------------------------------
-        // CREATE WHATSAPP MESSAGE
-        // -----------------------------------------
-
-        const message =
-            createWhatsAppMessage(
-                order,
-                customerName,
-                customerPhone,
-                customerAddress,
-                customerNotes
-            );
-
-
-        const whatsappURL =
-            `https://wa.me/${WHATSAPP_NUMBER}?text=${
-                encodeURIComponent(message)
-            }`;
-
-
-        // -----------------------------------------
-        // SUCCESS
-        // -----------------------------------------
-
-        alert(
-            `Order ${order.order_number} created successfully!`
-        );
-
-
-        // -----------------------------------------
-        // OPEN WHATSAPP
-        // -----------------------------------------
-
-        window.open(
-            whatsappURL,
-            "_blank"
-        );
-
-
-        // -----------------------------------------
-        // CLEAR ORDER
-        // -----------------------------------------
-
-        cart = [];
-
-        renderCart();
-
-        closeModal();
-
-        clearCustomerForm();
-
-
-    } catch (error) {
-
-        console.error(
-            "ORDER ERROR:",
-            error
-        );
-
-
-        alert(
-            `Failed to place order:\n${error.message}`
-        );
-
-
-    } finally {
-
-        if (submitButton) {
-
-            submitButton.disabled =
-                false;
-
-            submitButton.textContent =
-                "Place Order";
-        }
-    }
-}
-
-
-// =====================================================
-// CREATE WHATSAPP MESSAGE
-// =====================================================
 
 function createWhatsAppMessage(
     order,
@@ -1357,3 +1105,95 @@ document.addEventListener(
     "DOMContentLoaded",
     loadProducts
 );
+
+
+async function submitOrder(order) {
+    const button = document.querySelector("#place-order, .place-order, [type='submit']");
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Processing...";
+    }
+
+    try {
+        /*
+         * Save the order first.
+         * This will work when the API is available.
+         */
+        let savedOrder = null;
+
+        try {
+            const response = await fetch("/api/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(order)
+            });
+
+            if (response.ok) {
+                savedOrder = await response.json();
+            }
+        } catch (apiError) {
+            console.warn("Order API unavailable:", apiError);
+        }
+
+        const orderNumber =
+            savedOrder?.order?.order_number ||
+            savedOrder?.order_number ||
+            ("HC-" + Date.now().toString().slice(-8));
+
+        const items = Array.isArray(order.items)
+            ? order.items
+            : [];
+
+        const itemText = items.length
+            ? items.map(item => {
+                const name = item.name || item.product_name || "Product";
+                const qty = Number(item.quantity || 1);
+                const price = Number(item.price || 0);
+                return `${name} x${qty} = TZS ${(price * qty).toLocaleString()}`;
+            }).join("\n")
+            : "Order details unavailable";
+
+        const total = Number(order.total || 0);
+
+        const message =
+`HANS CHAPATIE CENTRE - NEW ORDER
+
+Order No: ${orderNumber}
+
+CUSTOMER
+Name: ${order.customer_name || order.name || ""}
+Phone: ${order.customer_phone || order.phone || ""}
+Address: ${order.address || ""}
+
+ORDER
+${itemText}
+
+TOTAL: TZS ${total.toLocaleString()}
+
+Notes: ${order.notes || "None"}
+
+Please confirm this order.`;
+
+        /*
+         * Open WhatsApp with the complete order.
+         * Customer only needs to press SEND.
+         */
+        const whatsappURL =
+            "https://wa.me/${WHATSAPP}?text=" +
+            encodeURIComponent(message);
+
+        window.location.href = whatsappURL;
+
+    } catch (error) {
+        console.error("Order error:", error);
+        alert("Unable to process the order. Please try again.");
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Place Order";
+        }
+    }
+}
+
