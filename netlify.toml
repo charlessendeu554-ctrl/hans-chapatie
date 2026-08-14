@@ -1,5 +1,20 @@
+[build]
+  publish = "frontend"
+  functions = "netlify/functions"
+
 [[redirects]]
   from = "/api/*"
-  to = "https://hans-chapatie-api.onrender.com/api/:splat"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin/"
+  status = 301
+
+[[redirects]]
+  from = "/admin/dashboard"
+  to = "/admin/dashboard.html"
   status = 200
   force = true
