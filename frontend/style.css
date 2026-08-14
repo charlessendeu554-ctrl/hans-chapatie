@@ -668,3 +668,15 @@ footer {
     }
 
 }
+
+/* Order button vibration/click feedback */
+.order-product {
+    transition:
+        transform 0.12s ease,
+        opacity 0.12s ease;
+}
+
+.order-product.order-clicked {
+    transform: scale(0.94);
+    opacity: 0.8;
+}

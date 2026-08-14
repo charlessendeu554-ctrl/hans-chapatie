@@ -883,6 +883,18 @@ async function loadProducts() {
 
                 button.addEventListener("click", () => {
 
+                    // Vibration feedback on supported phones
+                    if ("vibrate" in navigator) {
+                        navigator.vibrate([80, 40, 80]);
+                    }
+
+                    // Small visual feedback
+                    button.classList.add("order-clicked");
+
+                    setTimeout(() => {
+                        button.classList.remove("order-clicked");
+                    }, 250);
+
                     const productId =
                         button.getAttribute("data-product-id");
 
