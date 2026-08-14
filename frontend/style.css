@@ -1000,3 +1000,44 @@ body.order-page-open {
 .send-whatsapp-order:active {
     transform: scale(.98);
 }
+
+/* ============================================================
+   HANS CHAPATIE ORDER SUMMARY
+   ============================================================ */
+
+.order-summary {
+    margin: 20px 0;
+    padding: 16px;
+    border-radius: 12px;
+    background: #f5f5f5;
+}
+
+.order-summary > div {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+}
+
+.order-summary .order-total {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 2px solid #ddd;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.send-whatsapp-order {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: #25D366;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.send-whatsapp-order:active {
+    transform: scale(.97);
+}

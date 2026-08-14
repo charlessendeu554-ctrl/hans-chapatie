@@ -1199,8 +1199,9 @@ Please confirm this order.`;
 
 
 
+
 // ============================================================
-// HANS CHAPATIE - WHATSAPP ORDER SYSTEM
+// HANS CHAPATIE CENTRE - CUSTOMER ORDER SYSTEM
 // ============================================================
 
 const HANS_WHATSAPP = "255695995956";
@@ -1211,7 +1212,6 @@ document.addEventListener("click", function (event) {
 
     if (!button) return;
 
-    // Vibration on supported phones
     if (navigator.vibrate) {
         navigator.vibrate([100, 50, 100]);
     }
@@ -1241,18 +1241,28 @@ document.addEventListener("click", function (event) {
     const productName =
         product?.name ||
         button.dataset.productName ||
-        "Chapati Order";
+        "Chapati";
 
     const productPrice =
         Number(product?.price || button.dataset.productPrice || 0);
 
-    showCustomerOrderForm(productName, productPrice, productId);
+    showCustomerOrderForm(
+        productName,
+        productPrice,
+        productId
+    );
 });
 
 
-function showCustomerOrderForm(productName, productPrice, productId) {
+function showCustomerOrderForm(
+    productName,
+    productPrice,
+    productId
+) {
 
-    const old = document.getElementById("customer-order-modal");
+    const old = document.getElementById(
+        "customer-order-modal"
+    );
 
     if (old) old.remove();
 
@@ -1261,29 +1271,31 @@ function showCustomerOrderForm(productName, productPrice, productId) {
     modal.id = "customer-order-modal";
 
     modal.innerHTML = `
+
         <div class="order-modal-overlay">
 
             <div class="order-modal">
 
                 <button
                     type="button"
-                    class="close-order-modal"
-                    aria-label="Close">
+                    class="close-order-modal">
                     ×
                 </button>
 
                 <h2>Complete Your Order</h2>
 
-                <p class="selected-product">
-                    <strong>${escapeHtml(productName)}</strong>
-                </p>
+                <div class="selected-product">
 
-                <p>
-                    Price:
-                    <strong>
-                        TZS ${productPrice.toLocaleString("en-TZ")}
-                    </strong>
-                </p>
+                    <strong>${escapeHtml(productName)}</strong>
+
+                    <div>
+                        Price:
+                        <strong>
+                            TZS ${productPrice.toLocaleString("en-TZ")}
+                        </strong>
+                    </div>
+
+                </div>
 
                 <form id="customer-order-form">
 
@@ -1293,8 +1305,7 @@ function showCustomerOrderForm(productName, productPrice, productId) {
                             id="customer-name"
                             type="text"
                             required
-                            autocomplete="name"
-                            placeholder="Enter your name">
+                            placeholder="Enter your full name">
                     </label>
 
                     <label>
@@ -1303,16 +1314,15 @@ function showCustomerOrderForm(productName, productPrice, productId) {
                             id="customer-phone"
                             type="tel"
                             required
-                            autocomplete="tel"
                             placeholder="07XXXXXXXX">
                     </label>
 
                     <label>
-                        Location / Address
+                        Delivery Location
                         <textarea
                             id="customer-address"
                             required
-                            placeholder="Where should we deliver?"></textarea>
+                            placeholder="Enter your location"></textarea>
                     </label>
 
                     <label>
@@ -1325,10 +1335,40 @@ function showCustomerOrderForm(productName, productPrice, productId) {
                             required>
                     </label>
 
+                    <div class="order-summary">
+
+                        <div>
+                            Unit Price:
+                            <strong>
+                                TZS ${productPrice.toLocaleString("en-TZ")}
+                            </strong>
+                        </div>
+
+                        <div>
+                            Quantity:
+                            <strong id="order-quantity-display">
+                                1
+                            </strong>
+                        </div>
+
+                        <div class="order-total">
+
+                            TOTAL:
+
+                            <strong id="order-total-display">
+                                TZS ${productPrice.toLocaleString("en-TZ")}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
                     <button
                         type="submit"
                         class="send-whatsapp-order">
+
                         Order on WhatsApp
+
                     </button>
 
                 </form>
@@ -1340,94 +1380,225 @@ function showCustomerOrderForm(productName, productPrice, productId) {
 
     document.body.appendChild(modal);
 
+    const quantityInput =
+        document.getElementById(
+            "customer-quantity"
+        );
+
+    const quantityDisplay =
+        document.getElementById(
+            "order-quantity-display"
+        );
+
+    const totalDisplay =
+        document.getElementById(
+            "order-total-display"
+        );
+
+    function updateTotal() {
+
+        let quantity =
+            Number(quantityInput.value);
+
+        if (!Number.isFinite(quantity) || quantity < 1) {
+            quantity = 1;
+            quantityInput.value = 1;
+        }
+
+        const total =
+            productPrice * quantity;
+
+        quantityDisplay.textContent =
+            quantity.toLocaleString("en-TZ");
+
+        totalDisplay.textContent =
+            "TZS " +
+            total.toLocaleString("en-TZ");
+    }
+
+    quantityInput.addEventListener(
+        "input",
+        updateTotal
+    );
+
+    quantityInput.addEventListener(
+        "change",
+        updateTotal
+    );
+
+    updateTotal();
+
     document
         .querySelector(".close-order-modal")
-        .addEventListener("click", () => modal.remove());
+        .addEventListener(
+            "click",
+            () => modal.remove()
+        );
 
     document
         .querySelector(".order-modal-overlay")
-        .addEventListener("click", function (e) {
-            if (e.target === this) modal.remove();
-        });
+        .addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === this) {
+                    modal.remove();
+                }
+
+            }
+        );
 
     document
         .getElementById("customer-order-form")
-        .addEventListener("submit", function (e) {
+        .addEventListener(
+            "submit",
+            function (event) {
 
-            e.preventDefault();
+                event.preventDefault();
 
-            const name =
-                document.getElementById("customer-name").value.trim();
+                const name =
+                    document
+                        .getElementById("customer-name")
+                        .value
+                        .trim();
 
-            const phone =
-                document.getElementById("customer-phone").value.trim();
+                const phone =
+                    document
+                        .getElementById("customer-phone")
+                        .value
+                        .trim();
 
-            const address =
-                document.getElementById("customer-address").value.trim();
+                const address =
+                    document
+                        .getElementById("customer-address")
+                        .value
+                        .trim();
 
-            const quantity =
-                Number(
-                    document.getElementById("customer-quantity").value
-                );
+                const quantity =
+                    Number(quantityInput.value);
 
-            if (!name || !phone || !address || quantity < 1) {
-                alert("Please complete all information.");
-                return;
-            }
+                if (
+                    !name ||
+                    !phone ||
+                    !address ||
+                    quantity < 1
+                ) {
 
-            if (navigator.vibrate) {
-                navigator.vibrate([150, 70, 150]);
-            }
+                    alert(
+                        "Please complete all customer information."
+                    );
 
-            const total = productPrice * quantity;
+                    return;
+                }
 
-            const message =
-`🫓 HANS CHAPATIE CENTRE - NEW ORDER
+                const total =
+                    productPrice * quantity;
+
+                if (navigator.vibrate) {
+                    navigator.vibrate(
+                        [150, 70, 150]
+                    );
+                }
+
+                /*
+                 * POLITE WHATSAPP MESSAGE
+                 */
+
+                const message =
+
+`🫓 *HANS CHAPATIE CENTRE*
+
+Hello Hans Chapatie Centre 👋
+
+I would like to place an order.
+
+━━━━━━━━━━━━━━━━━━
+
+🛒 *ORDER DETAILS*
 
 Product: ${productName}
 Quantity: ${quantity}
-Price: TZS ${productPrice.toLocaleString("en-TZ")}
-TOTAL: TZS ${total.toLocaleString("en-TZ")}
+Unit Price: TZS ${productPrice.toLocaleString("en-TZ")}
 
-CUSTOMER INFORMATION
+💰 *TOTAL: TZS ${total.toLocaleString("en-TZ")}*
+
+━━━━━━━━━━━━━━━━━━
+
+👤 *CUSTOMER INFORMATION*
+
 Name: ${name}
 Phone: ${phone}
 Location: ${address}
 
-Please confirm this order.`;
+━━━━━━━━━━━━━━━━━━
 
-            const whatsappURL =
-                "https://wa.me/" +
-                HANS_WHATSAPP +
-                "?text=" +
-                encodeURIComponent(message);
+Thank you very much. Please confirm my order and let me know when it is ready. 🙏
 
-            // Save the order locally as a backup.
-            try {
-                const orders = JSON.parse(
-                    localStorage.getItem("hans_orders") || "[]"
-                );
+I look forward to receiving my order from Hans Chapatie Centre. ❤️`;
 
-                orders.push({
-                    productId,
-                    product: productName,
-                    price: productPrice,
-                    quantity,
-                    total,
-                    customerName: name,
-                    customerPhone: phone,
-                    address,
-                    createdAt: new Date().toISOString()
-                });
+                const whatsappURL =
+                    "https://wa.me/" +
+                    HANS_WHATSAPP +
+                    "?text=" +
+                    encodeURIComponent(message);
 
-                localStorage.setItem(
-                    "hans_orders",
-                    JSON.stringify(orders)
-                );
-            } catch (_) {}
+                /*
+                 * SAVE ORDER LOCALLY
+                 */
 
-            // IMPORTANT:
-            // Open WhatsApp only AFTER the customer submits the form.
-            window.location.href = whatsappURL;
-        });
+                try {
+
+                    const orders =
+                        JSON.parse(
+                            localStorage.getItem(
+                                "hans_orders"
+                            ) || "[]"
+                        );
+
+                    orders.push({
+
+                        id:
+                            Date.now(),
+
+                        productId,
+
+                        product:
+                            productName,
+
+                        price:
+                            productPrice,
+
+                        quantity,
+
+                        total,
+
+                        customerName:
+                            name,
+
+                        customerPhone:
+                            phone,
+
+                        address,
+
+                        createdAt:
+                            new Date()
+                                .toISOString()
+
+                    });
+
+                    localStorage.setItem(
+                        "hans_orders",
+                        JSON.stringify(orders)
+                    );
+
+                } catch (_) {}
+
+                /*
+                 * OPEN WHATSAPP
+                 */
+
+                window.location.href =
+                    whatsappURL;
+            }
+        );
 }
