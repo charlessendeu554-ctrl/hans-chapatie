@@ -1602,3 +1602,31 @@ I look forward to receiving my order from Hans Chapatie Centre. ❤️`;
             }
         );
 }
+
+/*
+ * HANS CHAPATIE - AUTOMATIC WHATSAPP ORDER
+ */
+
+async function sendOrderToWhatsApp(order) {
+    try {
+        const response = await fetch("/.netlify/functions/send-whatsapp-order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(order)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "WhatsApp order failed");
+        }
+
+        return true;
+
+    } catch (error) {
+        console.error("WhatsApp order error:", error);
+        return false;
+    }
+}
