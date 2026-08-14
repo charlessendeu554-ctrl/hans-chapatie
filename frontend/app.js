@@ -921,6 +921,8 @@ async function loadProducts() {
    ORDER FORM
 ================================ */
 
+let selectedProduct = null;
+
 async function openOrderForm(productId) {
 
     try {
@@ -930,118 +932,407 @@ async function openOrderForm(productId) {
 
         const data = await response.json();
 
-        if (!data.success) {
+        if (!response.ok || !data.success) {
             alert("Product not found.");
             return;
         }
 
-        const product = data.product;
+        selectedProduct = data.product;
 
-        const quantityInput =
-            prompt(
-                product.name +
-                "\\nPrice: TZS " +
-                Number(product.price).toLocaleString() +
-                "\\n\\nEnter quantity:",
-                "1"
-            );
+        showOrderPage();
 
-        if (quantityInput === null) {
-            return;
-        }
+    } catch (error) {
 
-        const quantity = Number(quantityInput);
+        console.error("PRODUCT ERROR:", error);
 
-        if (!Number.isInteger(quantity) || quantity < 1) {
-            alert("Please enter a valid quantity.");
-            return;
-        }
+        alert("Unable to open order form.");
+    }
+}
 
-        const name =
-            prompt("Enter your name:");
 
-        if (!name || !name.trim()) {
-            alert("Please enter your name.");
-            return;
-        }
+function showOrderPage() {
 
-        const phone =
-            prompt("Enter your phone number:");
+    if ("vibrate" in navigator) {
+        navigator.vibrate([80, 40, 80]);
+    }
 
-        if (!phone || !phone.trim()) {
-            alert("Please enter your phone number.");
-            return;
-        }
+    let page = document.getElementById("order-page");
 
-        const address =
-            prompt("Enter delivery location:");
+    if (!page) {
 
-        if (!address || !address.trim()) {
-            alert("Please enter your delivery location.");
-            return;
-        }
+        page = document.createElement("div");
 
-        const total = product.price * quantity;
+        page.id = "order-page";
 
-        const confirmed =
-            confirm(
-                "CONFIRM ORDER\\n\\n" +
-                product.name +
-                "\\nQuantity: " +
-                quantity +
-                "\\nPrice: TZS " +
-                Number(product.price).toLocaleString() +
-                "\\nTOTAL: TZS " +
-                Number(total).toLocaleString()
-            );
+        page.innerHTML = `
+            <div class="order-page-overlay">
 
-        if (!confirmed) {
-            return;
-        }
+                <div class="order-page-card">
 
-        const orderResponse =
+                    <button
+                        type="button"
+                        id="close-order-page"
+                        class="close-order-page">
+                        ×
+                    </button>
+
+                    <div class="order-header">
+
+                        <h2>Place Your Order</h2>
+
+                        <p>
+                            Enter your information below
+                        </p>
+
+                    </div>
+
+                    <div class="selected-product">
+
+                        <h3 id="order-product-name"></h3>
+
+                        <p id="order-product-description"></p>
+
+                        <strong id="order-product-price"></strong>
+
+                    </div>
+
+                    <form id="customer-order-form">
+
+                        <label for="customer-name">
+                            Full Name
+                        </label>
+
+                        <input
+                            id="customer-name"
+                            type="text"
+                            placeholder="Enter your full name"
+                            required
+                            autocomplete="name"
+                        >
+
+                        <label for="customer-phone">
+                            Phone Number
+                        </label>
+
+                        <input
+                            id="customer-phone"
+                            type="tel"
+                            placeholder="07XXXXXXXX"
+                            required
+                            autocomplete="tel"
+                        >
+
+                        <label for="customer-address">
+                            Delivery Location
+                        </label>
+
+                        <input
+                            id="customer-address"
+                            type="text"
+                            placeholder="Enter your delivery location"
+                            required
+                            autocomplete="street-address"
+                        >
+
+                        <label for="customer-quantity">
+                            Quantity
+                        </label>
+
+                        <input
+                            id="customer-quantity"
+                            type="number"
+                            min="1"
+                            value="1"
+                            required
+                        >
+
+                        <label for="customer-notes">
+                            Additional Notes
+                        </label>
+
+                        <textarea
+                            id="customer-notes"
+                            rows="3"
+                            placeholder="Optional instructions">
+                        </textarea>
+
+                        <div class="order-total-box">
+
+                            <span>
+                                Total
+                            </span>
+
+                            <strong id="order-total">
+                                TZS 0
+                            </strong>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            id="place-order-button"
+                            class="place-order-button">
+
+                            Place Order
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(page);
+
+        document
+            .getElementById("close-order-page")
+            .addEventListener("click", closeOrderPage);
+
+        document
+            .getElementById("customer-quantity")
+            .addEventListener("input", updateOrderTotal);
+
+        document
+            .getElementById("customer-order-form")
+            .addEventListener("submit", submitOrder);
+
+    }
+
+    document.body.classList.add("order-page-open");
+
+    document.getElementById("order-product-name").textContent =
+        selectedProduct.name;
+
+    document.getElementById("order-product-description").textContent =
+        selectedProduct.description || "";
+
+    document.getElementById("order-product-price").textContent =
+        "TZS " +
+        Number(selectedProduct.price).toLocaleString();
+
+    document.getElementById("customer-quantity").value = 1;
+
+    updateOrderTotal();
+
+    setTimeout(() => {
+        document
+            .getElementById("customer-name")
+            .focus();
+    }, 100);
+}
+
+
+function updateOrderTotal() {
+
+    if (!selectedProduct) {
+        return;
+    }
+
+    const quantity =
+        Number(
+            document.getElementById("customer-quantity").value
+        ) || 1;
+
+    const total =
+        Number(selectedProduct.price) * quantity;
+
+    document.getElementById("order-total").textContent =
+        "TZS " + total.toLocaleString();
+}
+
+
+function closeOrderPage() {
+
+    const page =
+        document.getElementById("order-page");
+
+    if (page) {
+        page.remove();
+    }
+
+    document.body.classList.remove("order-page-open");
+
+    selectedProduct = null;
+}
+
+
+async function submitOrder(event) {
+
+    event.preventDefault();
+
+    if (!selectedProduct) {
+        return;
+    }
+
+    const button =
+        document.getElementById("place-order-button");
+
+    const name =
+        document.getElementById("customer-name").value.trim();
+
+    const phone =
+        document.getElementById("customer-phone").value.trim();
+
+    const address =
+        document.getElementById("customer-address").value.trim();
+
+    const quantity =
+        Number(
+            document.getElementById("customer-quantity").value
+        );
+
+    const notes =
+        document.getElementById("customer-notes").value.trim();
+
+    if (!name || !phone || !address) {
+
+        alert(
+            "Please complete all required information."
+        );
+
+        return;
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+
+        alert(
+            "Please enter a valid quantity."
+        );
+
+        return;
+    }
+
+    const total =
+        Number(selectedProduct.price) * quantity;
+
+    if ("vibrate" in navigator) {
+        navigator.vibrate([100, 50, 100]);
+    }
+
+    button.disabled = true;
+
+    button.textContent =
+        "Placing Order...";
+
+    try {
+
+        const response =
             await fetch("/api/orders", {
+
                 method: "POST",
+
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
+
                 body: JSON.stringify({
-                    productId,
+
+                    productId:
+                        selectedProduct.id,
+
                     quantity,
-                    customerName: name.trim(),
-                    phone: phone.trim(),
-                    address: address.trim()
+
+                    customerName:
+                        name,
+
+                    phone:
+                        phone,
+
+                    address:
+                        address,
+
+                    notes
+
                 })
+
             });
 
         const result =
-            await orderResponse.json();
+            await response.json();
 
-        if (!orderResponse.ok || !result.success) {
+        if (!response.ok || !result.success) {
+
             throw new Error(
                 result.error || "Order failed"
             );
         }
 
-        alert(
-            "ORDER PLACED SUCCESSFULLY!\\n\\n" +
-            "Product: " + product.name +
-            "\\nQuantity: " + quantity +
-            "\\nTotal: TZS " +
-            Number(total).toLocaleString()
-        );
+        if ("vibrate" in navigator) {
+            navigator.vibrate([100, 50, 100, 50, 150]);
+        }
+
+        document
+            .querySelector(".order-page-card")
+            .innerHTML = `
+
+                <div class="order-success">
+
+                    <div class="success-icon">
+                        ✓
+                    </div>
+
+                    <h2>
+                        Order Received!
+                    </h2>
+
+                    <p>
+                        Thank you, ${escapeHtml(name)}.
+                    </p>
+
+                    <div class="success-order-summary">
+
+                        <p>
+                            <strong>
+                                ${escapeHtml(selectedProduct.name)}
+                            </strong>
+                        </p>
+
+                        <p>
+                            Quantity:
+                            ${quantity}
+                        </p>
+
+                        <p>
+                            Total:
+                            <strong>
+                                TZS ${total.toLocaleString()}
+                            </strong>
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="place-order-button"
+                        onclick="closeOrderPage()">
+
+                        Done
+
+                    </button>
+
+                </div>
+            `;
 
     } catch (error) {
 
-        console.error("ORDER ERROR:", error);
+        console.error(
+            "ORDER ERROR:",
+            error
+        );
+
+        button.disabled = false;
+
+        button.textContent =
+            "Place Order";
 
         alert(
-            "Unable to place order. Please try again."
+            "Unable to place your order. Please try again."
         );
     }
 }
-
 
 /* ================================
    HTML SAFETY
