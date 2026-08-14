@@ -429,7 +429,6 @@ async function startServer() {
 
 // Start HTTP server only when running directly with Node.
 if (require.main === module) {
-    startServer();
 }
 
 
