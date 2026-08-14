@@ -921,3 +921,82 @@ body.order-page-open {
     }
 
 }
+
+/* ============================================================
+   CUSTOMER ORDER MODAL
+   ============================================================ */
+
+.order-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0,0,0,.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.order-modal {
+    position: relative;
+    width: min(520px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+
+.order-modal h2 {
+    margin-top: 0;
+}
+
+.close-order-modal {
+    position: absolute;
+    right: 14px;
+    top: 10px;
+    border: 0;
+    background: transparent;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.order-modal label {
+    display: block;
+    margin: 15px 0;
+    font-weight: 600;
+}
+
+.order-modal input,
+.order-modal textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 7px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 9px;
+    font-size: 16px;
+}
+
+.order-modal textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.send-whatsapp-order {
+    width: 100%;
+    border: 0;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #25D366;
+    color: white;
+}
+
+.send-whatsapp-order:active {
+    transform: scale(.98);
+}
