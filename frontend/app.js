@@ -787,26 +787,25 @@ loadProducts();
 
 renderCart();
 
+
+
 /* ================================
-   HANS CHAPATIE PRODUCT LOADER
-   ================================ */
+   HANS CHAPATIE PRODUCT SYSTEM
+================================ */
 
 async function loadProducts() {
-    const containers = [
-        document.querySelector("#products"),
-        document.querySelector(".products"),
-        document.querySelector(".product-grid"),
-        document.querySelector("#product-grid")
-    ];
 
-    const container = containers.find(Boolean);
+    const container =
+        document.querySelector("#products") ||
+        document.querySelector(".products");
 
     if (!container) {
-        console.error("Product container not found.");
+        console.error("Products container not found.");
         return;
     }
 
     try {
+
         const response = await fetch("/api/products", {
             method: "GET",
             headers: {
@@ -816,47 +815,54 @@ async function loadProducts() {
         });
 
         if (!response.ok) {
-            throw new Error(`Products API returned ${response.status}`);
+            throw new Error("API returned HTTP " + response.status);
         }
 
         const data = await response.json();
 
-        const products = Array.isArray(data)
-            ? data
-            : Array.isArray(data.products)
-                ? data.products
-                : [];
+        const products = Array.isArray(data.products)
+            ? data.products
+            : [];
 
         if (!products.length) {
+
             container.innerHTML = `
                 <div class="no-products">
                     <h3>No products available</h3>
-                    <p>Please check the admin product database.</p>
                 </div>
             `;
+
             return;
         }
 
         container.innerHTML = products.map(product => `
+
             <article class="product-card">
-                ${
-                    product.image
-                        ? `<img src="${product.image}" alt="${escapeHtml(product.name || "Product")}" loading="lazy">`
-                        : ""
+
+                ${product.image
+                    ? `
+                        <img
+                            src="${escapeHtml(product.image)}"
+                            alt="${escapeHtml(product.name)}"
+                            loading="lazy"
+                        >
+                    `
+                    : ""
                 }
 
                 <div class="product-card-content">
-                    <h3>${escapeHtml(product.name || "")}</h3>
 
-                    ${
-                        product.description
-                            ? `<p>${escapeHtml(product.description)}</p>`
-                            : ""
-                    }
+                    <h3>${escapeHtml(product.name)}</h3>
+
+                    <p>
+                        ${escapeHtml(product.description || "")}
+                    </p>
 
                     <strong>
-                        ${formatPrice(product.price)}
+                        TZS ${Number(product.price).toLocaleString()}
                     </strong>
+
+                    <br><br>
 
                     <button
                         type="button"
@@ -864,23 +870,173 @@ async function loadProducts() {
                         data-product-id="${product.id}">
                         Order Now
                     </button>
+
                 </div>
+
             </article>
+
         `).join("");
 
+        document
+            .querySelectorAll(".order-product")
+            .forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    const productId =
+                        button.getAttribute("data-product-id");
+
+                    openOrderForm(productId);
+                });
+
+            });
+
     } catch (error) {
-        console.error("Unable to load products:", error);
+
+        console.error("PRODUCT ERROR:", error);
 
         container.innerHTML = `
             <div class="no-products">
-                <h3>Products temporarily unavailable</h3>
-                <p>Please try again shortly.</p>
+                <h3>Unable to load products</h3>
+                <p>Please try again.</p>
             </div>
         `;
     }
 }
 
+
+/* ================================
+   ORDER FORM
+================================ */
+
+async function openOrderForm(productId) {
+
+    try {
+
+        const response =
+            await fetch("/api/products/" + productId);
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert("Product not found.");
+            return;
+        }
+
+        const product = data.product;
+
+        const quantityInput =
+            prompt(
+                product.name +
+                "\\nPrice: TZS " +
+                Number(product.price).toLocaleString() +
+                "\\n\\nEnter quantity:",
+                "1"
+            );
+
+        if (quantityInput === null) {
+            return;
+        }
+
+        const quantity = Number(quantityInput);
+
+        if (!Number.isInteger(quantity) || quantity < 1) {
+            alert("Please enter a valid quantity.");
+            return;
+        }
+
+        const name =
+            prompt("Enter your name:");
+
+        if (!name || !name.trim()) {
+            alert("Please enter your name.");
+            return;
+        }
+
+        const phone =
+            prompt("Enter your phone number:");
+
+        if (!phone || !phone.trim()) {
+            alert("Please enter your phone number.");
+            return;
+        }
+
+        const address =
+            prompt("Enter delivery location:");
+
+        if (!address || !address.trim()) {
+            alert("Please enter your delivery location.");
+            return;
+        }
+
+        const total = product.price * quantity;
+
+        const confirmed =
+            confirm(
+                "CONFIRM ORDER\\n\\n" +
+                product.name +
+                "\\nQuantity: " +
+                quantity +
+                "\\nPrice: TZS " +
+                Number(product.price).toLocaleString() +
+                "\\nTOTAL: TZS " +
+                Number(total).toLocaleString()
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        const orderResponse =
+            await fetch("/api/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    productId,
+                    quantity,
+                    customerName: name.trim(),
+                    phone: phone.trim(),
+                    address: address.trim()
+                })
+            });
+
+        const result =
+            await orderResponse.json();
+
+        if (!orderResponse.ok || !result.success) {
+            throw new Error(
+                result.error || "Order failed"
+            );
+        }
+
+        alert(
+            "ORDER PLACED SUCCESSFULLY!\\n\\n" +
+            "Product: " + product.name +
+            "\\nQuantity: " + quantity +
+            "\\nTotal: TZS " +
+            Number(total).toLocaleString()
+        );
+
+    } catch (error) {
+
+        console.error("ORDER ERROR:", error);
+
+        alert(
+            "Unable to place order. Please try again."
+        );
+    }
+}
+
+
+/* ================================
+   HTML SAFETY
+================================ */
+
 function escapeHtml(value) {
+
     return String(value)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -889,14 +1045,12 @@ function escapeHtml(value) {
         .replaceAll("'", "&#039;");
 }
 
-function formatPrice(value) {
-    const number = Number(value || 0);
 
-    return new Intl.NumberFormat("en-TZ", {
-        style: "currency",
-        currency: "TZS",
-        maximumFractionDigits: 0
-    }).format(number);
-}
+/* ================================
+   START
+================================ */
 
-document.addEventListener("DOMContentLoaded", loadProducts);
+document.addEventListener(
+    "DOMContentLoaded",
+    loadProducts
+);
