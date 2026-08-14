@@ -419,13 +419,17 @@ async function startServer() {
             error.message
         );
 
-        process.exit(1);
+        console.error("PostgreSQL unavailable; API process will continue.");
 
     }
 
 }
 
 
-startServer();
+
+// Start HTTP server only when running directly with Node.
+if (require.main === module) {
+    startServer();
+}
 
 module.exports = app;
