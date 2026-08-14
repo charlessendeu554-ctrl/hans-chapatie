@@ -432,4 +432,30 @@ if (require.main === module) {
     startServer();
 }
 
+
+// Public products API
+app.get("/api/products", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT id, name, description, price, image, available
+            FROM products
+            WHERE available = true
+            ORDER BY id ASC
+        `);
+
+        res.json({
+            success: true,
+            products: result.rows
+        });
+    } catch (error) {
+        console.error("Products API error:", error);
+
+        res.status(500).json({
+            success: false,
+            products: [],
+            error: "Unable to load products"
+        });
+    }
+});
+
 module.exports = app;

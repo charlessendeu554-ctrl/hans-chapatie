@@ -786,3 +786,117 @@ function escapeHtml(value) {
 loadProducts();
 
 renderCart();
+
+/* ================================
+   HANS CHAPATIE PRODUCT LOADER
+   ================================ */
+
+async function loadProducts() {
+    const containers = [
+        document.querySelector("#products"),
+        document.querySelector(".products"),
+        document.querySelector(".product-grid"),
+        document.querySelector("#product-grid")
+    ];
+
+    const container = containers.find(Boolean);
+
+    if (!container) {
+        console.error("Product container not found.");
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/products", {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            },
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error(`Products API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const products = Array.isArray(data)
+            ? data
+            : Array.isArray(data.products)
+                ? data.products
+                : [];
+
+        if (!products.length) {
+            container.innerHTML = `
+                <div class="no-products">
+                    <h3>No products available</h3>
+                    <p>Please check the admin product database.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = products.map(product => `
+            <article class="product-card">
+                ${
+                    product.image
+                        ? `<img src="${product.image}" alt="${escapeHtml(product.name || "Product")}" loading="lazy">`
+                        : ""
+                }
+
+                <div class="product-card-content">
+                    <h3>${escapeHtml(product.name || "")}</h3>
+
+                    ${
+                        product.description
+                            ? `<p>${escapeHtml(product.description)}</p>`
+                            : ""
+                    }
+
+                    <strong>
+                        ${formatPrice(product.price)}
+                    </strong>
+
+                    <button
+                        type="button"
+                        class="order-product"
+                        data-product-id="${product.id}">
+                        Order Now
+                    </button>
+                </div>
+            </article>
+        `).join("");
+
+    } catch (error) {
+        console.error("Unable to load products:", error);
+
+        container.innerHTML = `
+            <div class="no-products">
+                <h3>Products temporarily unavailable</h3>
+                <p>Please try again shortly.</p>
+            </div>
+        `;
+    }
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function formatPrice(value) {
+    const number = Number(value || 0);
+
+    return new Intl.NumberFormat("en-TZ", {
+        style: "currency",
+        currency: "TZS",
+        maximumFractionDigits: 0
+    }).format(number);
+}
+
+document.addEventListener("DOMContentLoaded", loadProducts);
